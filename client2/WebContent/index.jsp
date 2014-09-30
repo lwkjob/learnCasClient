@@ -12,6 +12,6 @@
 <title>Insert title here</title>
 </head>
 <body>
-	你好妹子2
+	你好妹子2 <%=username %>
 </body>
 </html>
