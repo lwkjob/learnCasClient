@@ -20,9 +20,8 @@ package org.jasig.cas.adaptors.jdbc;
 
 import java.security.GeneralSecurityException;
 
-import org.jasig.cas.authentication.HandlerResult;
 import org.jasig.cas.authentication.PreventedException;
-import org.jasig.cas.authentication.UsernamePasswordCredential;
+import org.jasig.cas.authentication.principal.Principal;
 import org.jasig.cas.authentication.principal.SimplePrincipal;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -50,11 +49,10 @@ public class QueryDatabaseAuthenticationHandler extends AbstractJdbcUsernamePass
 
     /** {@inheritDoc} */
     @Override
-    protected final HandlerResult authenticateUsernamePasswordInternal(final UsernamePasswordCredential credential)
+    protected final Principal authenticateUsernamePasswordInternal(final String username, final String password)
             throws GeneralSecurityException, PreventedException {
 
-        final String username = credential.getUsername();
-        final String encryptedPassword = this.getPasswordEncoder().encode(credential.getPassword());
+        final String encryptedPassword = this.getPasswordEncoder().encode(password);
         try {
             final String dbPassword = getJdbcTemplate().queryForObject(this.sql, String.class, username);
             if (!dbPassword.equals(encryptedPassword)) {
@@ -69,7 +67,7 @@ public class QueryDatabaseAuthenticationHandler extends AbstractJdbcUsernamePass
         } catch (final DataAccessException e) {
             throw new PreventedException("SQL exception while executing query for " + username, e);
         }
-        return createHandlerResult(credential, new SimplePrincipal(username), null);
+        return new SimplePrincipal(username);
     }
 
     /**

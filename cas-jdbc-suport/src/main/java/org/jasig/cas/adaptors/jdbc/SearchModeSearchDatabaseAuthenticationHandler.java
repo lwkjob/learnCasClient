@@ -20,9 +20,8 @@ package org.jasig.cas.adaptors.jdbc;
 
 import java.security.GeneralSecurityException;
 
-import org.jasig.cas.authentication.HandlerResult;
 import org.jasig.cas.authentication.PreventedException;
-import org.jasig.cas.authentication.UsernamePasswordCredential;
+import org.jasig.cas.authentication.principal.Principal;
 import org.jasig.cas.authentication.principal.SimplePrincipal;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
@@ -61,11 +60,10 @@ public class SearchModeSearchDatabaseAuthenticationHandler extends AbstractJdbcU
 
     /** {@inheritDoc} */
     @Override
-    protected final HandlerResult authenticateUsernamePasswordInternal(final UsernamePasswordCredential credential)
+    protected final Principal authenticateUsernamePasswordInternal(final String username, final String password)
             throws GeneralSecurityException, PreventedException {
 
-        final String username = credential.getUsername();
-        final String encyptedPassword = getPasswordEncoder().encode(credential.getPassword());
+        final String encyptedPassword = getPasswordEncoder().encode(password);
         final int count;
         try {
             count = getJdbcTemplate().queryForObject(this.sql, Integer.class, username, encyptedPassword);
@@ -75,12 +73,12 @@ public class SearchModeSearchDatabaseAuthenticationHandler extends AbstractJdbcU
         if (count == 0) {
             throw new FailedLoginException(username + " not found with SQL query.");
         }
-        return createHandlerResult(credential, new SimplePrincipal(username), null);
+        return new SimplePrincipal(username);
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        this.sql = SQL_PREFIX + this.tableUsers + " WHERE " + this.fieldUser + " = ? AND " + this.fieldPassword
+        this.sql = SQL_PREFIX + this.tableUsers + " Where " + this.fieldUser + " = ? And " + this.fieldPassword
                 + " = ?";
     }
 
