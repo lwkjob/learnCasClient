@@ -37,6 +37,13 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+<modules>
+   <module>cas-client-core</module> 
+   <module>cas-jdbc-suport</module> 
+   <module>client1</module> 
+   <module>client2</module> 
+</modules>
+
     <properties>
         <ehcache.version>2.2.0</ehcache.version>
         <clover.version>3.0.2</clover.version>
